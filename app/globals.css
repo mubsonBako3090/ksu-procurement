@@ -1,0 +1,178 @@
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import 'bootstrap/dist/css/bootstrap.min.css';
+@import 'bootstrap-icons/font/bootstrap-icons.css';
+
+/* ── CSS Variables ─────────────────────────────────────────── */
+:root {
+  --bg:           #0B0F1A;
+  --panel:        #111827;
+  --card:         #1A2235;
+  --border:       #1E2D45;
+  --accent:       #00C37B;
+  --accent-dim:   rgba(0, 195, 123, 0.13);
+  --gold:         #F5A623;
+  --gold-dim:     rgba(245, 166, 35, 0.13);
+  --red:          #E84545;
+  --red-dim:      rgba(232, 69, 69, 0.13);
+  --blue:         #3B82F6;
+  --blue-dim:     rgba(59, 130, 246, 0.13);
+  --purple:       #A855F7;
+  --purple-dim:   rgba(168, 85, 247, 0.13);
+  --text:         #E8EDF5;
+  --muted:        #6B7A99;
+  --font-main:    'Sora', sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+  --radius:       8px;
+  --radius-lg:    14px;
+  --shadow:       0 4px 24px rgba(0, 0, 0, 0.4);
+  --transition:   all 0.2s ease;
+}
+
+/* ── Reset ─────────────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin:     0;
+  padding:    0;
+}
+
+html,
+body {
+  height:      100%;
+  font-family: var(--font-main);
+  background:  var(--bg);
+  color:       var(--text);
+  font-size:   14px;
+  line-height: 1.6;
+}
+
+a {
+  color:           inherit;
+  text-decoration: none;
+}
+
+button,
+input,
+select,
+textarea {
+  font-family: var(--font-main);
+}
+
+/* ── Scrollbar ──────────────────────────────────────────────── */
+::-webkit-scrollbar       { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: var(--panel); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+/* ── Bootstrap overrides ───────────────────────────────────── */
+.btn:focus,
+.form-control:focus,
+.form-select:focus {
+  box-shadow: 0 0 0 3px var(--accent-dim);
+}
+
+.form-control,
+.form-select {
+  background-color: var(--panel);
+  border:           1px solid var(--border);
+  color:            var(--text);
+  border-radius:    var(--radius);
+}
+
+.form-control:focus,
+.form-select:focus {
+  background-color: var(--panel);
+  border-color:     var(--accent);
+  color:            var(--text);
+}
+
+.form-control::placeholder { color: var(--muted); }
+
+.form-label {
+  font-size:      12px;
+  font-weight:    600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color:          var(--muted);
+  margin-bottom:  6px;
+}
+
+.table {
+  color:        var(--text);
+  border-color: var(--border);
+}
+
+.table > :not(caption) > * > * {
+  background-color: transparent;
+  color:            var(--text);
+  border-color:     var(--border);
+}
+
+.table-hover > tbody > tr:hover > * {
+  background-color: rgba(30, 45, 69, 0.5);
+}
+
+.modal-content {
+  background:   var(--card);
+  border:       1px solid var(--border);
+  border-radius: var(--radius-lg);
+  color:        var(--text);
+}
+
+.modal-header {
+  border-bottom: 1px solid var(--border);
+}
+
+.modal-footer {
+  border-top: 1px solid var(--border);
+}
+
+.dropdown-menu {
+  background:    var(--card);
+  border:        1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.dropdown-item {
+  color: var(--text);
+}
+
+.dropdown-item:hover {
+  background: var(--border);
+  color:      var(--text);
+}
+
+/* ── Animations ────────────────────────────────────────────── */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(-12px); }
+  to   { opacity: 1; transform: translateX(0);     }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1;  }
+  50%       { opacity: .4; }
+}
+
+.fade-in  { animation: fadeIn  0.35s ease forwards; }
+.slide-in { animation: slideIn 0.35s ease forwards; }
+
+/* ── Utility classes ───────────────────────────────────────── */
+.font-mono  { font-family: var(--font-mono); }
+.text-accent { color: var(--accent) !important; }
+.text-gold   { color: var(--gold)   !important; }
+.text-muted-custom { color: var(--muted) !important; }
+
+.bg-card    { background: var(--card)  !important; }
+.bg-panel   { background: var(--panel) !important; }
+
+.border-custom { border: 1px solid var(--border) !important; }
+.radius-lg     { border-radius: var(--radius-lg) !important; }
