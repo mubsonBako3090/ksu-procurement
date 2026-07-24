@@ -95,4 +95,3 @@ export const generateLPOPDF = async (lpo) => {
                                                                                                                                                                                                                                     doc.end();
                                                                                                                                                                                                                                       return doc;
                                                                                                                                                                                                                                       };
-}
