@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { requireAuth }  from '@/lib/auth';
 import { getSummary }   from '@/services/report.service';
 import { successResponse, handleError } from '@/utils/apiResponse';
