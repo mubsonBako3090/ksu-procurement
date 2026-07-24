@@ -1,0 +1,44 @@
+.wrapper { margin-bottom: 18px; }
+
+.header {
+  display:         flex;
+    justify-content: space-between;
+      margin-bottom:   6px;
+      }
+
+      .label {
+        font-size:   13px;
+          font-weight: 500;
+            color:       var(--text);
+            }
+
+            .pct {
+              font-size:   13px;
+                font-weight: 700;
+                }
+
+                .track {
+                  background:    var(--border);
+                    border-radius: 6px;
+                      height:        8px;
+                        position:      relative;
+                          overflow:      hidden;
+                          }
+
+                          .committed,
+                          .spent {
+                            position:      absolute;
+                              height:        100%;
+                                border-radius: 6px;
+                                  top:           0;
+                                    left:          0;
+                                      transition:    width 0.8s ease;
+                                      }
+
+                                      .legend {
+                                        display:         flex;
+                                          justify-content: space-between;
+                                            font-size:       11px;
+                                              color:           var(--muted);
+                                                margin-top:      4px;
+                                                }
