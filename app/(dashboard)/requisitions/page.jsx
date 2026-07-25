@@ -1,32 +1,18 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter }           from 'next/navigation';
 import axios                   from 'axios';
 import toast                   from 'react-hot-toast';
-import styles                  from './requisitions.module.css';
-import Badge                   from '@/components/ui/Badge/Badge';
+import styles                  from './new.module.css';
+import Card                    from '@/components/ui/Card/Card';
 import Button                  from '@/components/ui/Button/Button';
-import Table                   from '@/components/ui/Table/Table';
-import Spinner                 from '@/components/ui/Spinner/Spinner';
-import EmptyState              from '@/components/shared/EmptyState/EmptyState';
-import PriorityTag             from '@/components/shared/PriorityTag/PriorityTag';
+import Input                   from '@/components/ui/Input/Input';
+import Select                  from '@/components/ui/Select/Select';
+import Textarea                from '@/components/ui/Textarea/Textarea';
 import { useAuthStore }        from '@/store/authStore';
 import { formatNaira }         from '@/utils/formatCurrency';
-import { formatDate }          from '@/utils/formatDate';
-
-const STATUSES = [
-  'all',
-  'draft',
-  'pending_hod',
-  'pending_procurement',
-  'pending_finance',
-  'pending_vc',
-  'approved',
-  'rejected',
-];
 
 const CATEGORIES = [
-  'All Categories',
   'IT Equipment',
   'Office Supplies',
   'Furniture',
@@ -39,168 +25,482 @@ const CATEGORIES = [
   'Vehicles & Spare Parts',
 ];
 
-export default function RequisitionsPage() {
-  const { token, user }       = useAuthStore();
-  const router                = useRouter();
-  const [reqs,    setReqs]    = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [search,  setSearch]  = useState('');
-  const [status,  setStatus]  = useState('all');
-  const [category,setCategory]= useState('');
+const UNITS = [
+  'units', 'bags', 'cartons', 'reams',
+  'litres', 'kg', 'sets', 'pairs',
+  'bottles', 'lots', 'boxes',
+];
 
-  const fetchReqs = async () => {
+const EMPTY_ITEM = {
+  description: '',
+  quantity:    1,
+  unit:        'units',
+  unitPrice:   0,
+};
+
+export default function NewRequisitionPage() {
+  const { token, user } = useAuthStore();
+  const router          = useRouter();
+  const [step,    setStep]    = useState(1);
+  const [loading, setLoading] = useState(false);
+  const [depts,   setDepts]   = useState([]);
+  const [errors,  setErrors]  = useState({});
+
+  const [form, setForm] = useState({
+    title:         '',
+    department:    user?.department || '',
+    category:      '',
+    priority:      'medium',
+    justification: '',
+    requiredDate:  '',
+    items:         [{ ...EMPTY_ITEM }],
+  });
+
+  // ✅ Fetch real departments from API
+  useEffect(() => {
+    axios
+      .get('/api/departments', {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then(({ data }) => setDepts(data.data || []))
+      .catch(() => setDepts([]));
+  }, [token]);
+
+  const set = (k) => (e) =>
+    setForm((f) => ({ ...f, [k]: e.target.value }));
+
+  const setItem = (i, k) => (e) =>
+    setForm((f) => ({
+      ...f,
+      items: f.items.map((it, idx) =>
+        idx === i
+          ? {
+              ...it,
+              [k]:
+                k === 'description' || k === 'unit'
+                  ? e.target.value
+                  : Number(e.target.value),
+            }
+          : it
+      ),
+    }));
+
+  const addItem = () =>
+    setForm((f) => ({
+      ...f,
+      items: [...f.items, { ...EMPTY_ITEM }],
+    }));
+
+  const removeItem = (i) =>
+    setForm((f) => ({
+      ...f,
+      items: f.items.filter((_, idx) => idx !== i),
+    }));
+
+  const totalAmount = form.items.reduce(
+    (s, it) => s + (Number(it.quantity) || 0) * (Number(it.unitPrice) || 0),
+    0
+  );
+
+  const validateStep1 = () => {
+    const e = {};
+    if (!form.title.trim())         e.title        = 'Title is required';
+    if (!form.department)           e.department   = 'Department is required';
+    if (!form.category)             e.category     = 'Category is required';
+    if (!form.justification.trim()) e.justification= 'Justification is required';
+    setErrors(e);
+    return Object.keys(e).length === 0;
+  };
+
+  const validateStep2 = () => {
+    const e = {};
+    form.items.forEach((it, i) => {
+      if (!it.description.trim())    e[`item_${i}_desc`]  = 'Required';
+      if (Number(it.unitPrice) <= 0) e[`item_${i}_price`] = 'Must be > 0';
+      if (Number(it.quantity)  <= 0) e[`item_${i}_qty`]   = 'Must be > 0';
+    });
+    setErrors(e);
+    return Object.keys(e).length === 0;
+  };
+
+  const handleSubmit = async (asDraft = false) => {
     setLoading(true);
     try {
-      const params = {};
-      if (status   !== 'all') params.status   = status;
-      if (category !== '' && category !== 'All Categories') params.category = category;
+      const { data } = await axios.post(
+        '/api/requisitions',
+        { ...form, totalAmount },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
 
-      const { data } = await axios.get('/api/requisitions', {
-        params,
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setReqs(data.data || []);
-    } catch {
-      toast.error('Failed to load requisitions');
+      const reqId = data.data._id;
+
+      if (!asDraft) {
+        await axios.post(
+          `/api/requisitions/${reqId}/submit`,
+          {},
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        toast.success('Requisition submitted for approval!');
+      } else {
+        toast.success('Requisition saved as draft');
+      }
+
+      router.push('/requisitions');
+    } catch (err) {
+      toast.error(
+        err.response?.data?.message || 'Failed to submit requisition'
+      );
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => { fetchReqs(); }, [status, category]);
-
-  const filtered = reqs.filter((r) =>
-    r.title?.toLowerCase().includes(search.toLowerCase()) ||
-    r.reqNumber?.toLowerCase().includes(search.toLowerCase()) ||
-    r.department?.name?.toLowerCase().includes(search.toLowerCase())
-  );
-
-  const columns = [
-    {
-      key:    'reqNumber',
-      label:  'REQ ID',
-      render: (val) => (
-        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--accent)' }}>
-          {val}
-        </span>
-      ),
-    },
-    {
-      key:    'title',
-      label:  'Title',
-      render: (val) => (
-        <span style={{ fontWeight: 600 }}>{val}</span>
-      ),
-    },
-    {
-      key:    'department',
-      label:  'Department',
-      render: (val) => val?.name || '—',
-    },
-    {
-      key:    'category',
-      label:  'Category',
-    },
-    {
-      key:    'totalAmount',
-      label:  'Amount',
-      render: (val) => (
-        <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 700, color: 'var(--accent)' }}>
-          {formatNaira(val)}
-        </span>
-      ),
-    },
-    {
-      key:    'priority',
-      label:  'Priority',
-      render: (val) => <PriorityTag priority={val} />,
-    },
-    {
-      key:    'status',
-      label:  'Status',
-      render: (val) => <Badge status={val} />,
-    },
-    {
-      key:    'createdAt',
-      label:  'Date',
-      render: (val) => (
-        <span style={{ fontSize: 12, color: 'var(--muted)' }}>
-          {formatDate(val)}
-        </span>
-      ),
-    },
-  ];
+  const steps = ['Basic Info', 'Line Items', 'Review & Submit'];
 
   return (
     <div className={styles.page}>
       {/* Header */}
       <div className={styles.header}>
-        <div>
-          <h2 className={styles.title}>Requisitions</h2>
-          <p className={styles.sub}>
-            {filtered.length} of {reqs.length} records
-          </p>
-        </div>
-        {['requester', 'admin'].includes(user?.role) && (
-          <Button
-            onClick={() => router.push('/requisitions/new')}
-            icon="bi-plus-lg"
-          >
-            New Requisition
-          </Button>
-        )}
-      </div>
-
-      {/* Filters */}
-      <div className={styles.filters}>
-        {/* Search */}
-        <div className={styles.searchWrap}>
-          <i className={`bi bi-search ${styles.searchIcon}`} />
-          <input
-            className={styles.search}
-            placeholder="Search by title, ID or department..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-        </div>
-
-        {/* Status filter */}
-        <div className={styles.statusTabs}>
-          {STATUSES.map((s) => (
-            <button
-              key={s}
-              onClick={() => setStatus(s)}
-              className={[
-                styles.statusTab,
-                status === s ? styles.activeTab : '',
-              ].join(' ')}
-            >
-              {s === 'all' ? 'All' : s.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())}
-            </button>
-          ))}
-        </div>
-
-        {/* Category */}
-        <select
-          className={styles.categorySelect}
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
+        <button
+          className={styles.backBtn}
+          onClick={() => router.back()}
+          type="button"
         >
-          {CATEGORIES.map((c) => (
-            <option key={c} value={c}>{c}</option>
-          ))}
-        </select>
+          <i className="bi bi-arrow-left" /> Back
+        </button>
+        <div>
+          <h2 className={styles.title}>New Procurement Requisition</h2>
+          <p className={styles.sub}>Kaduna State University</p>
+        </div>
       </div>
 
-      {/* Table */}
-      <Table
-        columns={columns}
-        data={filtered}
-        loading={loading}
-        onRowClick={(row) => router.push(`/requisitions/${row._id}`)}
-        emptyMessage="No requisitions found"
-        emptyIcon="bi-clipboard-x"
-      />
+      {/* Step indicator */}
+      <div className={styles.steps}>
+        {steps.map((s, i) => (
+          <div key={i} className={styles.stepWrapper}>
+            <div className={styles.stepItem}>
+              <div
+                className={[
+                  styles.stepDot,
+                  i + 1 < step  ? styles.done   : '',
+                  i + 1 === step ? styles.active : '',
+                ].join(' ')}
+              >
+                {i + 1 < step
+                  ? <i className="bi bi-check-lg" />
+                  : i + 1
+                }
+              </div>
+              <div
+                className={[
+                  styles.stepLabel,
+                  i + 1 === step ? styles.activeLabel : '',
+                ].join(' ')}
+              >
+                {s}
+              </div>
+            </div>
+            {i < steps.length - 1 && (
+              <div
+                className={styles.stepLine}
+                style={{
+                  background:
+                    i + 1 < step ? 'var(--accent)' : 'var(--border)',
+                }}
+              />
+            )}
+          </div>
+        ))}
+      </div>
+
+      {/* ── Step 1 ── */}
+      {step === 1 && (
+        <Card className={styles.card}>
+          <h5 className={styles.cardTitle}>Basic Information</h5>
+          <div className={styles.grid2}>
+            <div className={styles.colSpan2}>
+              <Input
+                label="Requisition Title *"
+                value={form.title}
+                onChange={set('title')}
+                placeholder="e.g. Laptop Computers for ICT Lab"
+                error={errors.title}
+              />
+            </div>
+
+            {/* ✅ Department from API with real ObjectId values */}
+            <Select
+              label="Department *"
+              value={form.department}
+              onChange={set('department')}
+              error={errors.department}
+            >
+              <option value="">Select department</option>
+              {depts.map((d) => (
+                <option key={d._id} value={d._id}>
+                  {d.name}
+                </option>
+              ))}
+            </Select>
+
+            <Select
+              label="Category *"
+              value={form.category}
+              onChange={set('category')}
+              error={errors.category}
+            >
+              <option value="">Select category</option>
+              {CATEGORIES.map((c) => (
+                <option key={c} value={c}>{c}</option>
+              ))}
+            </Select>
+
+            <Select
+              label="Priority"
+              value={form.priority}
+              onChange={set('priority')}
+            >
+              <option value="low">Low</option>
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
+              <option value="urgent">Urgent</option>
+            </Select>
+
+            <Input
+              label="Required By Date"
+              type="date"
+              value={form.requiredDate}
+              onChange={set('requiredDate')}
+            />
+
+            <div className={styles.colSpan2}>
+              <Textarea
+                label="Justification / Purpose *"
+                value={form.justification}
+                onChange={set('justification')}
+                placeholder="Explain why this procurement is necessary..."
+                error={errors.justification}
+                style={{ minHeight: 100 }}
+              />
+            </div>
+          </div>
+
+          <div className={styles.stepActions}>
+            <Button
+              onClick={() => {
+                if (validateStep1()) setStep(2);
+              }}
+              icon="bi-arrow-right"
+            >
+              Next: Line Items
+            </Button>
+          </div>
+        </Card>
+      )}
+
+      {/* ── Step 2 ── */}
+      {step === 2 && (
+        <Card className={styles.card}>
+          <h5 className={styles.cardTitle}>Line Items</h5>
+
+          {form.items.map((item, i) => (
+            <div key={i} className={styles.itemCard}>
+              <div className={styles.itemHeader}>
+                <span className={styles.itemNum}>Item {i + 1}</span>
+                {form.items.length > 1 && (
+                  <button
+                    className={styles.removeBtn}
+                    onClick={() => removeItem(i)}
+                    type="button"
+                  >
+                    <i className="bi bi-trash" /> Remove
+                  </button>
+                )}
+              </div>
+
+              <div className={styles.grid4}>
+                <div className={styles.colSpan2}>
+                  <Input
+                    label="Description *"
+                    value={item.description}
+                    onChange={setItem(i, 'description')}
+                    placeholder="Item description"
+                    error={errors[`item_${i}_desc`]}
+                  />
+                </div>
+
+                <Input
+                  label="Quantity *"
+                  type="number"
+                  min="1"
+                  value={item.quantity}
+                  onChange={setItem(i, 'quantity')}
+                  error={errors[`item_${i}_qty`]}
+                />
+
+                <Select
+                  label="Unit"
+                  value={item.unit}
+                  onChange={setItem(i, 'unit')}
+                >
+                  {UNITS.map((u) => (
+                    <option key={u} value={u}>{u}</option>
+                  ))}
+                </Select>
+
+                <div className={styles.colSpan2}>
+                  <Input
+                    label="Unit Price (₦) *"
+                    type="number"
+                    min="0"
+                    value={item.unitPrice}
+                    onChange={setItem(i, 'unitPrice')}
+                    error={errors[`item_${i}_price`]}
+                  />
+                </div>
+
+                <div className={styles.colSpan2}>
+                  <div className={styles.subtotal}>
+                    Subtotal:
+                    <strong style={{ color: 'var(--accent)', marginLeft: 6 }}>
+                      {formatNaira(
+                        (Number(item.quantity) || 0) *
+                        (Number(item.unitPrice) || 0)
+                      )}
+                    </strong>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+
+          <button
+            className={styles.addItemBtn}
+            onClick={addItem}
+            type="button"
+          >
+            <i className="bi bi-plus-lg" /> Add Another Item
+          </button>
+
+          <div className={styles.totalRow}>
+            <span className={styles.totalLabel}>Total Amount:</span>
+            <span className={styles.totalValue}>{formatNaira(totalAmount)}</span>
+          </div>
+
+          <div className={styles.stepActions}>
+            <Button
+              variant="ghost"
+              onClick={() => setStep(1)}
+              icon="bi-arrow-left"
+            >
+              Back
+            </Button>
+            <Button
+              onClick={() => {
+                if (validateStep2()) setStep(3);
+              }}
+              icon="bi-arrow-right"
+            >
+              Next: Review
+            </Button>
+          </div>
+        </Card>
+      )}
+
+      {/* ── Step 3 ── */}
+      {step === 3 && (
+        <Card className={styles.card}>
+          <h5 className={styles.cardTitle}>Review & Submit</h5>
+
+          <div className={styles.reviewGrid}>
+            {[
+              ['Title',       form.title],
+              ['Department',  depts.find((d) => d._id === form.department)?.name || form.department],
+              ['Category',    form.category],
+              ['Priority',    form.priority.toUpperCase()],
+              ['Required By', form.requiredDate || 'Not specified'],
+              ['Total Amount',formatNaira(totalAmount)],
+            ].map(([k, v]) => (
+              <div key={k} className={styles.reviewItem}>
+                <div className={styles.reviewKey}>{k}</div>
+                <div
+                  className={styles.reviewVal}
+                  style={{
+                    color:
+                      k === 'Total Amount'
+                        ? 'var(--accent)'
+                        : 'var(--text)',
+                  }}
+                >
+                  {v}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className={styles.reviewSection}>
+            <div className={styles.reviewKey}>Justification</div>
+            <div className={styles.reviewJustification}>
+              {form.justification}
+            </div>
+          </div>
+
+          <div className={styles.reviewSection}>
+            <div className={styles.reviewKey}>
+              Line Items ({form.items.length})
+            </div>
+            <div className={styles.itemsReview}>
+              {form.items.map((it, i) => (
+                <div key={i} className={styles.itemReviewRow}>
+                  <span className={styles.itemReviewDesc}>
+                    {i + 1}. {it.description}
+                  </span>
+                  <span className={styles.itemReviewMeta}>
+                    {it.quantity} {it.unit} × {formatNaira(it.unitPrice)}
+                  </span>
+                  <span className={styles.itemReviewTotal}>
+                    {formatNaira(
+                      (Number(it.quantity) || 0) *
+                      (Number(it.unitPrice) || 0)
+                    )}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className={styles.warning}>
+            <i className="bi bi-exclamation-triangle" />
+            By submitting, this requisition will be sent for HOD
+            approval. Ensure all details are correct.
+          </div>
+
+          <div className={styles.stepActions}>
+            <Button
+              variant="ghost"
+              onClick={() => setStep(2)}
+              icon="bi-arrow-left"
+            >
+              Back
+            </Button>
+            <Button
+              variant="ghost"
+              onClick={() => handleSubmit(true)}
+              loading={loading}
+              icon="bi-save"
+            >
+              Save as Draft
+            </Button>
+            <Button
+              onClick={() => handleSubmit(false)}
+              loading={loading}
+              icon="bi-send"
+            >
+              Submit Requisition
+            </Button>
+          </div>
+        </Card>
+      )}
     </div>
   );
-}
+            }
