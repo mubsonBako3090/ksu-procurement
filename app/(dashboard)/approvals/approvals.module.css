@@ -1,0 +1,120 @@
+.page    { animation: fadeIn 0.35s ease; }
+
+.header {
+  display:         flex;
+  justify-content: space-between;
+  align-items:     flex-start;
+  margin-bottom:   24px;
+  flex-wrap:       wrap;
+  gap:             12px;
+}
+
+.title {
+  font-size:     20px;
+  font-weight:   700;
+  color:         var(--text);
+  margin-bottom: 4px;
+}
+
+.sub  { font-size: 13px; color: var(--muted); margin: 0; }
+
+.countBadge {
+  background:    var(--gold);
+  color:         #000;
+  font-size:     12px;
+  font-weight:   700;
+  padding:       6px 14px;
+  border-radius: 20px;
+}
+
+.queueList {
+  display:        flex;
+  flex-direction: column;
+  gap:            16px;
+}
+
+.queueCard {
+  background:    var(--card);
+  border:        1px solid rgba(245,166,35,0.35);
+  border-radius: var(--radius-lg);
+  padding:       20px 24px;
+  transition:    border-color 0.2s, background 0.2s;
+}
+
+.queueCard:hover {
+  border-color: var(--gold);
+  background:   rgba(245,166,35,0.04);
+}
+
+.queueTop {
+  display:         flex;
+  justify-content: space-between;
+  align-items:     flex-start;
+  gap:             16px;
+  margin-bottom:   14px;
+  flex-wrap:       wrap;
+}
+
+.queueLeft { flex: 1; min-width: 0; }
+
+.reqNum {
+  font-size:     11px;
+  color:         var(--accent);
+  font-family:   var(--font-mono);
+  font-weight:   700;
+  display:       block;
+  margin-bottom: 4px;
+}
+
+.reqTitle {
+  font-size:     16px;
+  font-weight:   700;
+  color:         var(--text);
+  margin:        0 0 8px;
+  overflow:      hidden;
+  text-overflow: ellipsis;
+  white-space:   nowrap;
+}
+
+.reqMeta {
+  display:   flex;
+  gap:       16px;
+  flex-wrap: wrap;
+  font-size: 12px;
+  color:     var(--muted);
+}
+
+.reqMeta span {
+  display:     flex;
+  align-items: center;
+  gap:         4px;
+}
+
+.queueRight {
+  text-align:  right;
+  flex-shrink: 0;
+}
+
+.amount {
+  font-size:     22px;
+  font-weight:   700;
+  color:         var(--accent);
+  font-family:   var(--font-mono);
+  margin-bottom: 4px;
+}
+
+.queueBottom {
+  display:         flex;
+  justify-content: space-between;
+  align-items:     center;
+  padding-top:     14px;
+  border-top:      1px solid var(--border);
+}
+
+.itemCount {
+  font-size: 12px;
+  color:     var(--muted);
+  display:   flex;
+  align-items: center;
+  gap:       5px;
+}
