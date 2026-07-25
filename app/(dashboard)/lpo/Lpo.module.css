@@ -1,0 +1,34 @@
+.page    { animation: fadeIn 0.35s ease; }
+
+.header {
+  display:         flex;
+  justify-content: space-between;
+  align-items:     flex-start;
+  margin-bottom:   24px;
+}
+
+.title { font-size: 20px; font-weight: 700; color: var(--text); margin: 0; }
+.sub   { font-size: 13px; color: var(--muted); margin: 0; }
+
+.summaryGrid {
+  display:               grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap:                   16px;
+  margin-bottom:         24px;
+}
+
+.summaryLabel {
+  font-size:      11px;
+  font-weight:    600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color:          var(--muted);
+  margin-bottom:  8px;
+}
+
+.summaryValue {
+  font-size:   26px;
+  font-weight: 700;
+}
+
+@media (max-width: 768px) { .summaryGrid { grid-template-columns: repeat(2, 1fr); } }
