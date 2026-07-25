@@ -1,0 +1,167 @@
+.page    { animation: fadeIn 0.35s ease; }
+
+.header {
+  display:         flex;
+  justify-content: space-between;
+  align-items:     flex-start;
+  margin-bottom:   24px;
+  flex-wrap:       wrap;
+  gap:             12px;
+}
+
+.title { font-size: 20px; font-weight: 700; color: var(--text); margin: 0; }
+.sub   { font-size: 13px; color: var(--muted); margin: 0; }
+
+.headerActions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+.yearSelect {
+  background:    var(--card);
+  border:        1px solid var(--border);
+  border-radius: var(--radius);
+  padding:       8px 14px;
+  color:         var(--text);
+  font-family:   var(--font-main);
+  font-size:     13px;
+  outline:       none;
+}
+
+.statsGrid {
+  display:               grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap:                   16px;
+  margin-bottom:         24px;
+}
+
+.grid2 {
+  display:               grid;
+  grid-template-columns: 1fr 1fr;
+  gap:                   20px;
+  margin-bottom:         20px;
+}
+
+.cardTitle {
+  font-size:     15px;
+  font-weight:   700;
+  color:         var(--text);
+  margin-bottom: 16px;
+}
+
+.empty { color: var(--muted); font-size: 13px; text-align: center; padding: 24px; }
+
+/* Department */
+.deptRow {
+  display:     flex;
+  align-items: center;
+  gap:         10px;
+  margin-bottom: 12px;
+}
+
+.deptInfo {
+  min-width:   160px;
+  display:     flex;
+  flex-direction:column;
+}
+
+.deptName  { font-size: 13px; font-weight: 500; color: var(--text); }
+.deptCount { font-size: 11px; color: var(--muted); }
+
+.deptBar {
+  flex:          1;
+  height:        8px;
+  background:    var(--border);
+  border-radius: 4px;
+  overflow:      hidden;
+}
+
+.deptBarFill {
+  height:        100%;
+  background:    var(--accent);
+  border-radius: 4px;
+  transition:    width 0.8s;
+}
+
+.deptVal {
+  font-size:   12px;
+  font-weight: 700;
+  color:       var(--accent);
+  font-family: var(--font-mono);
+  min-width:   100px;
+  text-align:  right;
+}
+
+/* Status */
+.statusRow {
+  display:       flex;
+  align-items:   center;
+  gap:           10px;
+  margin-bottom: 12px;
+}
+
+.statusLabel {
+  min-width: 160px;
+  font-size: 13px;
+  color:     var(--text);
+}
+
+.statusBar {
+  flex:          1;
+  height:        8px;
+  background:    var(--border);
+  border-radius: 4px;
+  overflow:      hidden;
+}
+
+.statusBarFill {
+  height:        100%;
+  border-radius: 4px;
+  transition:    width 0.8s;
+}
+
+.statusCount {
+  font-size:   13px;
+  font-weight: 700;
+  min-width:   28px;
+  text-align:  right;
+}
+
+/* Monthly chart */
+.monthlyChart {
+  display:     flex;
+  align-items: flex-end;
+  gap:         8px;
+  height:      180px;
+  padding-top: 16px;
+}
+
+.monthCol {
+  display:        flex;
+  flex-direction: column;
+  align-items:    center;
+  gap:            4px;
+  flex:           1;
+}
+
+.monthBarWrap {
+  flex:          1;
+  width:         100%;
+  display:       flex;
+  align-items:   flex-end;
+  justify-content:center;
+}
+
+.monthBar {
+  width:         80%;
+  background:    var(--accent);
+  border-radius: 4px 4px 0 0;
+  min-height:    4px;
+  transition:    height 0.8s ease;
+  opacity:       0.85;
+}
+
+.monthLabel { font-size: 11px; color: var(--muted); }
+.monthCount { font-size: 11px; color: var(--accent); font-weight: 700; }
+
+@media (max-width: 900px) {
+  .statsGrid { grid-template-columns: repeat(2, 1fr); }
+  .grid2     { grid-template-columns: 1fr; }
+}
