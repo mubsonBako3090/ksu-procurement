@@ -1,0 +1,191 @@
+.page {
+      min-height:      100vh;
+        background:      var(--bg);
+          display:         flex;
+            align-items:     center;
+              justify-content: center;
+                padding:         20px;
+                }
+
+                .card {
+                  background:    var(--panel);
+                    border:        1px solid var(--border);
+                      border-radius: 18px;
+                        padding:       40px;
+                          width:         100%;
+                            max-width:     460px;
+                              animation:     fadeIn 0.4s ease;
+                              }
+
+                              /* Logo */
+                              .logoBox {
+                                text-align:    center;
+                                  margin-bottom: 32px;
+                                  }
+
+                                  .logo {
+                                    width:           56px;
+                                      height:          56px;
+                                        background:      var(--accent);
+                                          border-radius:   14px;
+                                            display:         flex;
+                                              align-items:     center;
+                                                justify-content: center;
+                                                  font-size:       26px;
+                                                    font-weight:     800;
+                                                      color:           #000;
+                                                        margin:          0 auto 14px;
+                                                        }
+
+                                                        .appName {
+                                                          font-size:     20px;
+                                                            font-weight:   700;
+                                                              color:         var(--text);
+                                                                margin-bottom: 4px;
+                                                                }
+
+                                                                .appSub {
+                                                                  font-size: 13px;
+                                                                    color:     var(--muted);
+                                                                      margin:    0;
+                                                                      }
+
+                                                                      /* Form */
+                                                                      .form {
+                                                                        display:        flex;
+                                                                          flex-direction: column;
+                                                                            gap:            18px;
+                                                                              margin-bottom:  24px;
+                                                                              }
+
+                                                                              .field {
+                                                                                display:        flex;
+                                                                                  flex-direction: column;
+                                                                                    gap:            6px;
+                                                                                    }
+
+                                                                                    .label {
+                                                                                      font-size:      11px;
+                                                                                        font-weight:    600;
+                                                                                          text-transform: uppercase;
+                                                                                            letter-spacing: 0.5px;
+                                                                                              color:          var(--muted);
+                                                                                              }
+
+                                                                                              .inputWrap {
+                                                                                                position: relative;
+                                                                                                }
+
+                                                                                                .inputIcon {
+                                                                                                  position:  absolute;
+                                                                                                    left:      13px;
+                                                                                                      top:       50%;
+                                                                                                        transform: translateY(-50%);
+                                                                                                          color:     var(--muted);
+                                                                                                            font-size: 15px;
+                                                                                                            }
+
+                                                                                                            .input {
+                                                                                                              width:         100%;
+                                                                                                                background:    var(--bg);
+                                                                                                                  border:        1px solid var(--border);
+                                                                                                                    border-radius: var(--radius);
+                                                                                                                      padding:       11px 14px 11px 40px;
+                                                                                                                        color:         var(--text);
+                                                                                                                          font-family:   var(--font-main);
+                                                                                                                            font-size:     14px;
+                                                                                                                              outline:       none;
+                                                                                                                                transition:    border-color 0.2s;
+                                                                                                                                }
+
+                                                                                                                                .input:focus        { border-color: var(--accent); }
+                                                                                                                                .input::placeholder { color: var(--muted); }
+
+                                                                                                                                .submitBtn {
+                                                                                                                                  display:         flex;
+                                                                                                                                    align-items:     center;
+                                                                                                                                      justify-content: center;
+                                                                                                                                        gap:             8px;
+                                                                                                                                          background:      var(--accent);
+                                                                                                                                            border:          none;
+                                                                                                                                              border-radius:   var(--radius);
+                                                                                                                                                padding:         13px;
+                                                                                                                                                  color:           #000;
+                                                                                                                                                    font-family:     var(--font-main);
+                                                                                                                                                      font-weight:     700;
+                                                                                                                                                        font-size:       15px;
+                                                                                                                                                          cursor:          pointer;
+                                                                                                                                                            transition:      background 0.2s;
+                                                                                                                                                              width:           100%;
+                                                                                                                                                              }
+
+                                                                                                                                                              .submitBtn:hover:not(:disabled) { background: #00a869; }
+                                                                                                                                                              .submitBtn:disabled              { opacity: 0.6; cursor: not-allowed; }
+
+                                                                                                                                                              /* Demo box */
+                                                                                                                                                              .demoBox {
+                                                                                                                                                                background:    var(--bg);
+                                                                                                                                                                  border:        1px solid var(--border);
+                                                                                                                                                                    border-radius: 10px;
+                                                                                                                                                                      padding:       16px;
+                                                                                                                                                                      }
+
+                                                                                                                                                                      .demoTitle {
+                                                                                                                                                                        font-size:     11px;
+                                                                                                                                                                          font-weight:   600;
+                                                                                                                                                                            text-transform:uppercase;
+                                                                                                                                                                              letter-spacing:0.5px;
+                                                                                                                                                                                color:         var(--muted);
+                                                                                                                                                                                  margin-bottom: 12px;
+                                                                                                                                                                                    display:       flex;
+                                                                                                                                                                                      align-items:   center;
+                                                                                                                                                                                        gap:           6px;
+                                                                                                                                                                                        }
+
+                                                                                                                                                                                        .demoGrid {
+                                                                                                                                                                                          display:               grid;
+                                                                                                                                                                                            grid-template-columns: 1fr 1fr;
+                                                                                                                                                                                              gap:                   6px;
+                                                                                                                                                                                                margin-bottom:         10px;
+                                                                                                                                                                                                }
+
+                                                                                                                                                                                                .demoBtn {
+                                                                                                                                                                                                  display:        flex;
+                                                                                                                                                                                                    flex-direction: column;
+                                                                                                                                                                                                      align-items:    flex-start;
+                                                                                                                                                                                                        background:     var(--panel);
+                                                                                                                                                                                                          border:         1px solid var(--border);
+                                                                                                                                                                                                            border-radius:  var(--radius);
+                                                                                                                                                                                                              padding:        8px 10px;
+                                                                                                                                                                                                                cursor:         pointer;
+                                                                                                                                                                                                                  transition:     border-color 0.15s;
+                                                                                                                                                                                                                    text-align:     left;
+                                                                                                                                                                                                                    }
+
+                                                                                                                                                                                                                    .demoBtn:hover { border-color: var(--accent); }
+
+                                                                                                                                                                                                                    .demoRole {
+                                                                                                                                                                                                                      font-size:   11px;
+                                                                                                                                                                                                                        font-weight: 700;
+                                                                                                                                                                                                                          color:       var(--muted);
+                                                                                                                                                                                                                            text-transform: uppercase;
+                                                                                                                                                                                                                              letter-spacing: 0.5px;
+                                                                                                                                                                                                                              }
+
+                                                                                                                                                                                                                              .demoEmail {
+                                                                                                                                                                                                                                font-size: 11px;
+                                                                                                                                                                                                                                  color:     var(--accent);
+                                                                                                                                                                                                                                    margin-top: 2px;
+                                                                                                                                                                                                                                      overflow:   hidden;
+                                                                                                                                                                                                                                        text-overflow: ellipsis;
+                                                                                                                                                                                                                                          white-space:   nowrap;
+                                                                                                                                                                                                                                            width:         100%;
+                                                                                                                                                                                                                                            }
+
+                                                                                                                                                                                                                                            .demoPass {
+                                                                                                                                                                                                                                              font-size: 11px;
+                                                                                                                                                                                                                                                color:     var(--muted);
+                                                                                                                                                                                                                                                  text-align:center;
+                                                                                                                                                                                                                                                  }
+
+                                                                                                                                                                                                                                                  .demoPass strong { color: var(--gold); }
