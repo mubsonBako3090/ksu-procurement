@@ -1,0 +1,118 @@
+.page    { animation: fadeIn 0.35s ease; }
+
+.header {
+  display:         flex;
+  justify-content: space-between;
+  align-items:     flex-start;
+  margin-bottom:   20px;
+}
+
+.title { font-size: 20px; font-weight: 700; color: var(--text); margin: 0; }
+.sub   { font-size: 13px; color: var(--muted); margin: 0; }
+
+.searchWrap {
+  position:      relative;
+  margin-bottom: 20px;
+}
+
+.searchIcon {
+  position:  absolute;
+  left:      13px;
+  top:       50%;
+  transform: translateY(-50%);
+  color:     var(--muted);
+}
+
+.search {
+  width:         100%;
+  background:    var(--card);
+  border:        1px solid var(--border);
+  border-radius: var(--radius);
+  padding:       10px 14px 10px 40px;
+  color:         var(--text);
+  font-family:   var(--font-main);
+  font-size:     13px;
+  outline:       none;
+  transition:    border-color 0.2s;
+}
+.search:focus { border-color: var(--accent); }
+
+.logList { display: flex; flex-direction: column; }
+
+.logItem {
+  display: flex;
+  gap:     14px;
+}
+
+.logTrack {
+  display:        flex;
+  flex-direction: column;
+  align-items:    center;
+  flex-shrink:    0;
+}
+
+.logDot {
+  width:           32px;
+  height:          32px;
+  border-radius:   50%;
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  flex-shrink:     0;
+}
+
+.logLine {
+  width:      2px;
+  flex:       1;
+  min-height: 20px;
+  background: var(--border);
+  margin:     4px 0;
+}
+
+.logContent {
+  flex:           1;
+  padding-bottom: 20px;
+}
+
+.logHeader {
+  display:     flex;
+  align-items: center;
+  gap:         10px;
+  margin-bottom: 4px;
+  flex-wrap:   wrap;
+}
+
+.logReqNum {
+  font-size:   11px;
+  font-weight: 700;
+  color:       var(--accent);
+  font-family: var(--font-mono);
+}
+
+.logAction {
+  font-size:   12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.logDetails {
+  font-size:     13px;
+  color:         var(--text);
+  margin-bottom: 4px;
+}
+
+.logMeta {
+  display:     flex;
+  align-items: center;
+  gap:         12px;
+  font-size:   11px;
+  color:       var(--muted);
+  flex-wrap:   wrap;
+}
+
+.logMeta span {
+  display:     flex;
+  align-items: center;
+  gap:         4px;
+}
