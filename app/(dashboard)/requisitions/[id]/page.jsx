@@ -1,25 +1,25 @@
 'use client';
-import { useEffect, useState } from 'react';
-import { useRouter, useParams } from 'next/navigation';
-import axios                    from 'axios';
-import toast                    from 'react-hot-toast';
-import styles                   from './detail.module.css';
-import Card                     from '@/components/ui/Card/Card';
-import Badge                    from '@/components/ui/Badge/Badge';
-import Button                   from '@/components/ui/Button/Button';
-import Spinner                  from '@/components/ui/Spinner/Spinner';
-import ApprovalTimeline         from '@/components/shared/ApprovalTimeline/ApprovalTimeline';
-import PriorityTag              from '@/components/shared/PriorityTag/PriorityTag';
-import { useAuthStore }         from '@/store/authStore';
-import { formatNaira }          from '@/utils/formatCurrency';
-import { formatDate }           from '@/utils/formatDate';
-import { canApprove }           from '@/utils/roleHelpers';
+import { useEffect, useState }      from 'react';
+import { useRouter, useParams }     from 'next/navigation';
+import axios                        from 'axios';
+import toast                        from 'react-hot-toast';
+import styles                       from './detail.module.css';
+import Card                         from '@/components/ui/Card/Card';
+import Badge                        from '@/components/ui/Badge/Badge';
+import Button                       from '@/components/ui/Button/Button';
+import Spinner                      from '@/components/ui/Spinner/Spinner';
+import ApprovalTimeline             from '@/components/shared/ApprovalTimeline/ApprovalTimeline';
+import PriorityTag                  from '@/components/shared/PriorityTag/PriorityTag';
+import { useAuthStore }             from '@/store/authStore';
+import { formatNaira }              from '@/utils/formatCurrency';
+import { formatDate }               from '@/utils/formatDate';
+import { canApprove }               from '@/utils/roleHelpers';
 
 export default function RequisitionDetailPage() {
-  const { token, user }     = useAuthStore();
-  const router              = useRouter();
-  const { id }              = useParams();
-  const [req,     setReq]   = useState(null);
+  const { token, user }       = useAuthStore();
+  const router                = useRouter();
+  const { id }                = useParams();
+  const [req,     setReq]     = useState(null);
   const [loading, setLoading] = useState(true);
   const [comment, setComment] = useState('');
   const [acting,  setActing]  = useState(false);
@@ -48,6 +48,7 @@ export default function RequisitionDetailPage() {
         { headers: { Authorization: `Bearer ${token}` } }
       );
       toast.success('Requisition approved!');
+      setComment('');
       fetchReq();
     } catch (err) {
       toast.error(err.response?.data?.message || 'Failed to approve');
@@ -68,6 +69,7 @@ export default function RequisitionDetailPage() {
         { headers: { Authorization: `Bearer ${token}` } }
       );
       toast.success('Requisition rejected');
+      setComment('');
       fetchReq();
     } catch (err) {
       toast.error(err.response?.data?.message || 'Failed to reject');
@@ -94,6 +96,10 @@ export default function RequisitionDetailPage() {
   };
 
   const userCanApprove = req && canApprove(user?.role, req.status);
+
+  // ✅ Fixed: compare as strings
+  const isOwner =
+    req?.requester?._id?.toString() === user?.id?.toString();
 
   if (loading) return (
     <div style={{ display: 'flex', justifyContent: 'center', padding: 60 }}>
@@ -134,7 +140,6 @@ export default function RequisitionDetailPage() {
       <div className={styles.grid}>
         {/* Left column */}
         <div className={styles.leftCol}>
-          {/* Details card */}
           <Card style={{ marginBottom: 20 }}>
             <h5 className={styles.cardTitle}>Requisition Details</h5>
             <div className={styles.detailGrid}>
@@ -143,7 +148,9 @@ export default function RequisitionDetailPage() {
                 ['Department',  req.department?.name],
                 ['Category',    req.category],
                 ['Date Raised', formatDate(req.createdAt)],
-                ['Required By', req.requiredDate ? formatDate(req.requiredDate) : 'Not specified'],
+                ['Required By', req.requiredDate
+                  ? formatDate(req.requiredDate)
+                  : 'Not specified'],
                 ['Vendor',      req.vendor?.name || 'Not assigned'],
               ].map(([k, v]) => (
                 <div key={k} className={styles.detailItem}>
@@ -165,7 +172,9 @@ export default function RequisitionDetailPage() {
                 <i className="bi bi-x-circle" />
                 <div>
                   <strong>Rejection Reason:</strong>
-                  <p style={{ margin: '4px 0 0', fontSize: 13 }}>{req.rejectionReason}</p>
+                  <p style={{ margin: '4px 0 0', fontSize: 13 }}>
+                    {req.rejectionReason}
+                  </p>
                 </div>
               </div>
             )}
@@ -185,17 +194,27 @@ export default function RequisitionDetailPage() {
               {req.items?.map((item, i) => (
                 <div key={i} className={styles.itemRow}>
                   <span>{item.description}</span>
-                  <span style={{ fontFamily: 'var(--font-mono)' }}>{item.quantity}</span>
+                  <span style={{ fontFamily: 'var(--font-mono)' }}>
+                    {item.quantity}
+                  </span>
                   <span style={{ color: 'var(--muted)' }}>{item.unit}</span>
-                  <span style={{ fontFamily: 'var(--font-mono)' }}>{formatNaira(item.unitPrice)}</span>
-                  <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 700, color: 'var(--accent)' }}>
+                  <span style={{ fontFamily: 'var(--font-mono)' }}>
+                    {formatNaira(item.unitPrice)}
+                  </span>
+                  <span style={{
+                    fontFamily: 'var(--font-mono)',
+                    fontWeight: 700,
+                    color:      'var(--accent)',
+                  }}>
                     {formatNaira(item.totalPrice)}
                   </span>
                 </div>
               ))}
               <div className={styles.totalRow}>
                 <span>Total Amount</span>
-                <span className={styles.totalAmount}>{formatNaira(req.totalAmount)}</span>
+                <span className={styles.totalAmount}>
+                  {formatNaira(req.totalAmount)}
+                </span>
               </div>
             </div>
           </Card>
@@ -203,7 +222,6 @@ export default function RequisitionDetailPage() {
 
         {/* Right column */}
         <div className={styles.rightCol}>
-          {/* Approval timeline */}
           <Card style={{ marginBottom: 20 }}>
             <h5 className={styles.cardTitle}>Approval Workflow</h5>
             <ApprovalTimeline approvals={req.approvals || []} />
@@ -251,9 +269,8 @@ export default function RequisitionDetailPage() {
             </Card>
           )}
 
-          {/* Withdraw button */}
-          {req.status === 'pending_hod' &&
-           req.requester?._id === user?.id && (
+          {/* ✅ Fixed withdraw button — correct string comparison */}
+          {req.status === 'pending_hod' && isOwner && (
             <Card style={{ marginTop: 16 }}>
               <Button
                 variant="ghost"
