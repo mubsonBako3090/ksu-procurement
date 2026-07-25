@@ -1,0 +1,180 @@
+.page    { animation: fadeIn 0.35s ease; }
+
+.header  { margin-bottom: 24px; }
+
+.backBtn {
+  display:       flex;
+  align-items:   center;
+  gap:           6px;
+  background:    var(--card);
+  border:        1px solid var(--border);
+  border-radius: var(--radius);
+  padding:       8px 14px;
+  color:         var(--text);
+  font-family:   var(--font-main);
+  font-size:     13px;
+  cursor:        pointer;
+  margin-bottom: 16px;
+  transition:    border-color 0.2s;
+}
+.backBtn:hover { border-color: var(--accent); }
+
+.headerInfo {
+  display:         flex;
+  justify-content: space-between;
+  align-items:     flex-end;
+  flex-wrap:       wrap;
+  gap:             12px;
+}
+
+.lpoNum {
+  font-size:     12px;
+  color:         var(--accent);
+  font-family:   var(--font-mono);
+  font-weight:   700;
+  display:       block;
+  margin-bottom: 4px;
+}
+
+.title { font-size: 20px; font-weight: 700; color: var(--text); margin: 0; }
+
+.headerActions {
+  display:     flex;
+  align-items: center;
+  gap:         10px;
+}
+
+/* LPO Document */
+.lpoDoc {
+  max-width:  800px;
+  background: #ffffff !important;
+  color:      #111 !important;
+  border:     1px solid #ddd !important;
+}
+
+.docHeader {
+  display:     flex;
+  align-items: center;
+  gap:         16px;
+  margin-bottom: 16px;
+  text-align:  center;
+}
+
+.docLogo {
+  width:           56px;
+  height:          56px;
+  background:      #00C37B;
+  border-radius:   10px;
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  font-size:       26px;
+  font-weight:     800;
+  color:           #000;
+  flex-shrink:     0;
+}
+
+.docHeaderText { flex: 1; text-align: center; }
+.docHeaderText h3 { font-size: 18px; font-weight: 800; color: #111; margin: 0 0 4px; }
+.docHeaderText p  { font-size: 12px; color: #555; margin: 0; }
+
+.docDivider {
+  height:        2px;
+  background:    #111;
+  margin:        16px 0;
+}
+
+.docTitle {
+  text-align:    center;
+  font-size:     16px;
+  font-weight:   800;
+  color:         #111;
+  margin-bottom: 20px;
+  text-transform:uppercase;
+  letter-spacing:1px;
+}
+
+/* Meta */
+.metaGrid {
+  display:               grid;
+  grid-template-columns: 1fr 1fr;
+  gap:                   8px;
+  margin-bottom:         20px;
+  padding:               16px;
+  background:            #f8f9fa;
+  border-radius:         8px;
+}
+
+.metaItem { display: flex; gap: 6px; align-items: flex-start; }
+.metaKey  { font-size: 12px; color: #555; font-weight: 600; min-width: 110px; }
+.metaVal  { font-size: 13px; color: #111; font-weight: 600; }
+
+/* Table */
+.itemsTable { margin-bottom: 24px; }
+
+.tableHeader {
+  display:               grid;
+  grid-template-columns: 40px 2fr 60px 70px 130px 130px;
+  gap:                   8px;
+  padding:               8px 12px;
+  background:            #f0f0f0;
+  border:                1px solid #ddd;
+  font-size:             11px;
+  font-weight:           700;
+  color:                 #333;
+  text-transform:        uppercase;
+}
+
+.tableRow {
+  display:               grid;
+  grid-template-columns: 40px 2fr 60px 70px 130px 130px;
+  gap:                   8px;
+  padding:               10px 12px;
+  border:                1px solid #ddd;
+  border-top:            none;
+  font-size:             13px;
+  color:                 #111;
+}
+
+.tableRow:nth-child(even) { background: #fafafa; }
+
+.tableTotal {
+  display:         flex;
+  justify-content: space-between;
+  align-items:     center;
+  padding:         12px 16px;
+  border:          2px solid #111;
+  border-top:      none;
+  font-size:       14px;
+  font-weight:     700;
+  color:           #111;
+}
+
+.totalAmount {
+  font-size:   20px;
+  font-weight: 800;
+  color:       #00C37B;
+}
+
+/* Signatures */
+.signatures {
+  display:               grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap:                   32px;
+  margin-top:            40px;
+  padding-top:           20px;
+  border-top:            1px solid #ddd;
+}
+
+.sigBox { text-align: center; }
+
+.sigLine {
+  height:       1px;
+  background:   #111;
+  margin-bottom:6px;
+}
+
+.sigLabel {
+  font-size:  11px;
+  color:      #555;
+                   }
