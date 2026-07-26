@@ -85,21 +85,4 @@ export const config = {
   matcher: [
     '/((?!_next/static|_next/image|favicon.ico|public/).*)',
   ],
-};                                                                                                  { status: 401 }
-                                                                                                        );
-                                                                                                            }
-                                                                                                                return NextResponse.redirect(new URL('/login', request.url));
-                                                                                                                  }
-
-                                                                                                                    // Attach user to headers for API routes
-                                                                                                                      const requestHeaders = new Headers(request.headers);
-                                                                                                                        requestHeaders.set('x-user-id',   user.id);
-                                                                                                                          requestHeaders.set('x-user-role', user.role);
-                                                                                                                            requestHeaders.set('x-user-name', user.name);
-
-                                                                                                                              return NextResponse.next({ request: { headers: requestHeaders } });
-                                                                                                                              }
-
-                                                                                                                              export const config = {
-                                                                                                                                matcher: ['/((?!_next/static|_next/image|favicon.ico|public/).*)'],
-                                                                                                                                };
+};                                                            
