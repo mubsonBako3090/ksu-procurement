@@ -5,6 +5,7 @@ const PUBLIC_PATHS = [
   '/register',
   '/api/auth/login',
   '/api/auth/register',
+  '/api/departments/public',
 ];
 
 function decodeJWT(token) {
