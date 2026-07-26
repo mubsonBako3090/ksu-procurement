@@ -17,12 +17,22 @@ const DEMO_USERS = [
   { role: 'Admin',       email: 'admin@ksu.edu.ng'       },
 ];
 
+// Where each role goes after login
+const ROLE_REDIRECT = {
+  requester:   '/dashboard',
+  hod:         '/dashboard',
+  procurement: '/dashboard',
+  finance:     '/dashboard',
+  vc:          '/dashboard',
+  admin:       '/dashboard',
+};
+
 export default function LoginPage() {
-  const [form,    setForm]    = useState({ email: '', password: '' });
-  const [loading, setLoading] = useState(false);
-  const [showPass, setShowPass] = useState(false);
-  const { setAuth } = useAuthStore();
-  const router      = useRouter();
+  const [form,       setForm]       = useState({ email: '', password: '' });
+  const [loading,    setLoading]    = useState(false);
+  const [showPass,   setShowPass]   = useState(false);
+  const { setAuth }  = useAuthStore();
+  const router       = useRouter();
 
   const set = (k) => (e) =>
     setForm((f) => ({ ...f, [k]: e.target.value }));
@@ -35,11 +45,22 @@ export default function LoginPage() {
     setLoading(true);
     try {
       const { data } = await axios.post('/api/auth/login', form);
-      setAuth(data.data.token, data.data.user);
-      toast.success(`Welcome, ${data.data.user.name}!`);
-      router.push('/dashboard');
+      const { token, user } = data.data;
+
+      // Save auth state
+      setAuth(token, user);
+
+      // Show welcome message with role
+      toast.success(`Welcome, ${user.name}! Logged in as ${user.role}.`);
+
+      // Redirect based on role
+      const redirect = ROLE_REDIRECT[user.role] || '/dashboard';
+      router.push(redirect);
+
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Invalid email or password');
+      toast.error(
+        err.response?.data?.message || 'Invalid email or password'
+      );
     } finally {
       setLoading(false);
     }
@@ -97,7 +118,11 @@ export default function LoginPage() {
                 onClick={() => setShowPass((s) => !s)}
                 tabIndex={-1}
               >
-                <i className={`bi ${showPass ? 'bi-eye-slash' : 'bi-eye'}`} />
+                <i
+                  className={`bi ${
+                    showPass ? 'bi-eye-slash' : 'bi-eye'
+                  }`}
+                />
               </button>
             </div>
           </div>
@@ -154,4 +179,4 @@ export default function LoginPage() {
       </div>
     </div>
   );
-}
+      }
