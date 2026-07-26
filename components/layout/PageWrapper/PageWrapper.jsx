@@ -1,3 +1,4 @@
+'use client';
 import styles  from './PageWrapper.module.css';
 import Sidebar from '../Sidebar/Sidebar';
 import Topbar  from '../Topbar/Topbar';
