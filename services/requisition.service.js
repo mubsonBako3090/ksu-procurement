@@ -219,41 +219,7 @@ export const deleteRequisition = async (id, user) => {
   }
 
   await req.deleteOne();
-};                                              .populate('requester',            'name email role phone')
-                                                  .populate('department',           'name code hodName')
-                                                      .populate('vendor',               'name email phone location')
-                                                          .populate('approvals.approver',   'name role email');
-
-                                                            if (!req) throw { statusCode: 404, message: 'Requisition not found' };
-                                                              return req;
-                                                              };
-
-                                                              export const createRequisition = async (body, user) => {
-                                                                await connectDB();
-
-                                                                  const { items, ...rest } = body;
-
-                                                                    const req = await Requisition.create({
-                                                                        ...rest,
-                                                                            reqNumber:  generateReqNumber(),
-                                                                                requester:  user.id,
-                                                                                    department: user.department || body.department,
-                                                                                        items:      items || [],
-                                                                                            status:     'draft',
-                                                                                              });
-
-                                                                                                await AuditLog.create({
-                                                                                                    requisition: req._id,
-                                                                                                        user:        user.id,
-                                                                                                            action:      'CREATED',
-                                                                                                                details:     'Requisition created as draft',
-                                                                                                                  });
-
-                                                                                                                    return getOneRequisition(req._id);
-                                                                                                                    };
-
-                                                                                                                    export const updateRequisition = async (id, body, user) => {
-                                                                                                                      await connectDB();
+};connectDB();
 
                                                                                                                         const req = await Requisition.findById(id);
                                                                                                                           if (!req) throw { statusCode: 404, message: 'Requisition not found' };
