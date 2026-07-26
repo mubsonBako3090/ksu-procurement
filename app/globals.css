@@ -1,8 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
-@import 'bootstrap/dist/css/bootstrap.min.css';
-@import 'bootstrap-icons/font/bootstrap-icons.css';
 
-/* ── CSS Variables ─────────────────────────────────────────── */
 :root {
   --bg:           #0B0F1A;
   --panel:        #111827;
@@ -28,7 +25,6 @@
   --transition:   all 0.2s ease;
 }
 
-/* ── Reset ─────────────────────────────────────────────────── */
 *,
 *::before,
 *::after {
@@ -59,7 +55,6 @@ textarea {
   font-family: var(--font-main);
 }
 
-/* ── Scrollbar ──────────────────────────────────────────────── */
 ::-webkit-scrollbar       { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track { background: var(--panel); }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
@@ -115,17 +110,12 @@ textarea {
 .modal-content {
   background:   var(--card);
   border:       1px solid var(--border);
-  border-radius: var(--radius-lg);
+  border-radius:var(--radius-lg);
   color:        var(--text);
 }
 
-.modal-header {
-  border-bottom: 1px solid var(--border);
-}
-
-.modal-footer {
-  border-top: 1px solid var(--border);
-}
+.modal-header { border-bottom: 1px solid var(--border); }
+.modal-footer { border-top:    1px solid var(--border); }
 
 .dropdown-menu {
   background:    var(--card);
@@ -133,14 +123,8 @@ textarea {
   border-radius: var(--radius);
 }
 
-.dropdown-item {
-  color: var(--text);
-}
-
-.dropdown-item:hover {
-  background: var(--border);
-  color:      var(--text);
-}
+.dropdown-item       { color: var(--text); }
+.dropdown-item:hover { background: var(--border); color: var(--text); }
 
 /* ── Animations ────────────────────────────────────────────── */
 @keyframes fadeIn {
@@ -165,14 +149,12 @@ textarea {
 .fade-in  { animation: fadeIn  0.35s ease forwards; }
 .slide-in { animation: slideIn 0.35s ease forwards; }
 
-/* ── Utility classes ───────────────────────────────────────── */
-.font-mono  { font-family: var(--font-mono); }
-.text-accent { color: var(--accent) !important; }
-.text-gold   { color: var(--gold)   !important; }
-.text-muted-custom { color: var(--muted) !important; }
-
-.bg-card    { background: var(--card)  !important; }
-.bg-panel   { background: var(--panel) !important; }
-
-.border-custom { border: 1px solid var(--border) !important; }
-.radius-lg     { border-radius: var(--radius-lg) !important; }
+/* ── Utilities ─────────────────────────────────────────────── */
+.font-mono         { font-family: var(--font-mono); }
+.text-accent       { color: var(--accent)  !important; }
+.text-gold         { color: var(--gold)    !important; }
+.text-muted-custom { color: var(--muted)   !important; }
+.bg-card           { background: var(--card)  !important; }
+.bg-panel          { background: var(--panel) !important; }
+.border-custom     { border: 1px solid var(--border) !important; }
+.radius-lg         { border-radius: var(--radius-lg) !important; }
