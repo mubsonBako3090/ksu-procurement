@@ -13,6 +13,7 @@ const ROLE_OPTIONS = [
   { value: 'procurement', label: 'Procurement Officer'                      },
   { value: 'finance',     label: 'Finance / Bursar'                         },
   { value: 'vc',          label: 'Vice Chancellor'                          },
+  { value: 'admin',       label: 'System Administrator',  desc: 'Full system access'             },
 ];
 
 export default function RegisterPage() {
