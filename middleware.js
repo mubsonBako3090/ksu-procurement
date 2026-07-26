@@ -3,8 +3,10 @@ import { NextResponse } from 'next/server';
 const PUBLIC_PATHS = [
   '/login',
   '/register',
+  '/setup',                    // ✅ add this
   '/api/auth/login',
   '/api/auth/register',
+  '/api/auth/setup',           // ✅ add this
   '/api/departments/public',
 ];
 
