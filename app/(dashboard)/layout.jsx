@@ -1,38 +1,11 @@
-'use client';
-import { useEffect }     from 'react';
-import { useRouter }     from 'next/navigation';
-import { useAuthStore }  from '@/store/authStore';
-import PageWrapper       from '@/components/layout/PageWrapper/PageWrapper';
-import Spinner           from '@/components/ui/Spinner/Spinner';
+import AuthGuard   from '@/components/layout/AuthGuard/AuthGuard';
+import PageWrapper from '@/components/layout/PageWrapper/PageWrapper';
 
 export default function DashboardLayout({ children }) {
-  const { token, user } = useAuthStore();
-    const router          = useRouter();
-
-      useEffect(() => {
-          if (!token || !user) {
-                router.push('/login');
-                    }
-                      }, [token, user, router]);
-
-                        if (!token || !user) {
-                            return (
-                                  <div style={{
-                                          minHeight:       '100vh',
-                                                  display:         'flex',
-                                                          alignItems:      'center',
-                                                                  justifyContent:  'center',
-                                                                          background:      'var(--bg)',
-                                                                                  flexDirection:   'column',
-                                                                                          gap:             16,
-                                                                                                }}>
-                                                                                                        <Spinner size={40} />
-                                                                                                                <span style={{ color: 'var(--muted)', fontSize: 14 }}>
-                                                                                                                          Loading...
-                                                                                                                                  </span>
-                                                                                                                                        </div>
-                                                                                                                                            );
-                                                                                                                                              }
-
-                                                                                                                                                return <PageWrapper>{children}</PageWrapper>;
+  return (
+    <AuthGuard>
+      <PageWrapper>{children}</PageWrapper>
+    </AuthGuard>
+  );
+}                                                                                                                                                return <PageWrapper>{children}</PageWrapper>;
                                                                                                                                                 }
