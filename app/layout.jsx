@@ -2,7 +2,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import './globals.css';
 import BootstrapClient from '@/components/ui/BootstrapClient/BootstrapClient';
-import { Toaster } from 'react-hot-toast';
+import { Toaster }     from 'react-hot-toast';
 
 export const metadata = {
   title:       'KSU Procurement System',
@@ -35,6 +35,12 @@ export default function RootLayout({ children }) {
             success: { iconTheme: { primary: '#00C37B', secondary: '#000' } },
             error:   { iconTheme: { primary: '#E84545', secondary: '#fff' } },
           }}
+        />
+        {children}
+      </body>
+    </html>
+  );
+}          }}
         />
         {children}
       </body>
