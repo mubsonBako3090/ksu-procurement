@@ -6,8 +6,13 @@ import axios                   from 'axios';
 import toast                   from 'react-hot-toast';
 import styles                  from './setup.module.css';
 import Spinner                 from '@/components/ui/Spinner/Spinner';
+// Add import
+import { useAuthStore } from '@/store/authStore';
+
+
 
 export default function SetupPage() {
+  const { setAuth } = useAuthStore();
   const router   = useRouter();
   const [checking, setChecking]  = useState(true);
   const [allowed,  setAllowed]   = useState(false);
@@ -53,23 +58,40 @@ export default function SetupPage() {
     setErrors(e);
     return Object.keys(e).length === 0;
   };
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  if (!validate()) return;
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!validate()) return;
+  setLoading(true);
+  try {
+    // Step 1 — Create admin account
+    await axios.post('/api/auth/setup', form);
 
-    setLoading(true);
-    try {
-      await axios.post('/api/auth/setup', form);
-      setDone(true);
-      toast.success('Admin account created! Redirecting to login...');
-      setTimeout(() => router.push('/login'), 2500);
-    } catch (err) {
-      toast.error(err.response?.data?.message || 'Setup failed');
-    } finally {
-      setLoading(false);
-    }
-  };
+    toast.success('Admin account created! Logging you in...');
+
+    // Step 2 — Auto login
+    const { data } = await axios.post('/api/auth/login', {
+      email:    form.email,
+      password: form.password,
+    });
+
+    const { token: newToken, user: newUser } = data.data;
+
+    // Step 3 — Save auth
+    setAuth(newToken, newUser);
+
+    setDone(true);
+
+    // Step 4 — Redirect
+    setTimeout(() => {
+      router.push('/dashboard');
+    }, 2000);
+
+  } catch (err) {
+    toast.error(err.response?.data?.message || 'Setup failed');
+    setLoading(false);
+  }
+};
 
   if (checking) {
     return (
