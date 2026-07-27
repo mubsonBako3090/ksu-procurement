@@ -1,10 +1,10 @@
 'use client';
-import { create }   from 'zustand';
+import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 
 export const useAuthStore = create(
   persist(
-    (set) => ({
+    (set, get) => ({
       token:    null,
       user:     null,
       hydrated: false,
@@ -16,6 +16,7 @@ export const useAuthStore = create(
 
       logout: () => set({ token: null, user: null }),
 
+      // Called automatically when localStorage is loaded
       setHydrated: () => set({ hydrated: true }),
     }),
     {
@@ -23,7 +24,10 @@ export const useAuthStore = create(
       version: 1,
       storage: createJSONStorage(() => localStorage),
       onRehydrateStorage: () => (state) => {
-        state?.setHydrated();
+        // This runs after localStorage data is loaded into Zustand
+        if (state) {
+          state.setHydrated();
+        }
       },
     }
   )
