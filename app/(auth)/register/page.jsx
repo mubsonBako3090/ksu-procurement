@@ -62,31 +62,55 @@ export default function RegisterPage() {
     return Object.keys(e).length === 0;
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!validate()) return;
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  if (!validate()) return;
 
-    setLoading(true);
-    try {
-      const { name, email, password, role, department, phone, staffId } = form;
-      await axios.post('/api/auth/register', {
-        name,
-        email,
-        password,
-        role,
-        department: department || null,
-        phone,
-        staffId,
-      });
+  setLoading(true);
+  try {
+    const {
+      name, email, password,
+      role, department, phone, staffId,
+    } = form;
 
-      toast.success('Account created! Please log in.');
-      router.push('/login');
-    } catch (err) {
-      toast.error(err.response?.data?.message || 'Registration failed');
-    } finally {
-      setLoading(false);
-    }
-  };
+    // Step 1 — Register the account
+    await axios.post('/api/auth/register', {
+      name,
+      email,
+      password,
+      role,
+      department: department || null,
+      phone,
+      staffId,
+    });
+
+    toast.success('Account created! Logging you in...');
+
+    // Step 2 — Automatically log them in
+    const { data } = await axios.post('/api/auth/login', {
+      email,
+      password,
+    });
+
+    const { token: newToken, user: newUser } = data.data;
+
+    // Step 3 — Save auth state
+    setAuth(newToken, newUser);
+
+    toast.success(`Welcome, ${newUser.name}!`);
+
+    // Step 4 — Redirect to dashboard after short delay
+    setTimeout(() => {
+      router.push('/dashboard');
+    }, 100);
+
+  } catch (err) {
+    toast.error(
+      err.response?.data?.message || 'Registration failed'
+    );
+    setLoading(false);
+  }
+};
 
   const passwordStrength = (pwd) => {
     if (!pwd) return { level: 0, label: '', color: '' };
