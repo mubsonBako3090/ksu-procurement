@@ -120,26 +120,7 @@ const handleSubmit = async (e) => {
     setLoading(false);
   }
 };
-    const { token: newToken, user: newUser } = data.data;
-
-    // Step 3 — Save auth state
-    setAuth(newToken, newUser);
-
-    toast.success(`Welcome, ${newUser.name}!`);
-
-    // Step 4 — Redirect to dashboard after short delay
-    setTimeout(() => {
-      router.push('/dashboard');
-    }, 100);
-
-  } catch (err) {
-    toast.error(
-      err.response?.data?.message || 'Registration failed'
-    );
-    setLoading(false);
-  }
-};
-
+    
   const passwordStrength = (pwd) => {
     if (!pwd) return { level: 0, label: '', color: '' };
     let score = 0;
