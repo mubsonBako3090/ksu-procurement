@@ -1,22 +1,28 @@
 import { NextResponse } from 'next/server';
 
-const PUBLIC_PATHS = [
+// Pages that do NOT need a token
+const PUBLIC_PAGES = [
   '/login',
   '/register',
-  '/setup',                    // ✅ add this
+  '/setup',
+];
+
+// API routes that do NOT need a token
+const PUBLIC_API = [
   '/api/auth/login',
   '/api/auth/register',
-  '/api/auth/setup',           // ✅ add this
+  '/api/auth/setup',
   '/api/departments/public',
+  '/api/seed',
 ];
 
 function decodeJWT(token) {
   try {
-    const base64Payload = token.split('.')[1];
-    const payload       = atob(
-      base64Payload.replace(/-/g, '+').replace(/_/g, '/')
+    const base64 = token.split('.')[1];
+    const json   = atob(
+      base64.replace(/-/g, '+').replace(/_/g, '/')
     );
-    return JSON.parse(payload);
+    return JSON.parse(json);
   } catch {
     return null;
   }
@@ -25,67 +31,70 @@ function decodeJWT(token) {
 export function middleware(request) {
   const { pathname } = request.nextUrl;
 
-  if (PUBLIC_PATHS.some((p) => pathname.startsWith(p))) {
-    return NextResponse.next();
-  }
-
+  // Always allow Next.js internals
   if (
     pathname.startsWith('/_next') ||
-    pathname.startsWith('/favicon')
+    pathname.startsWith('/favicon') ||
+    pathname.startsWith('/public')
   ) {
     return NextResponse.next();
   }
 
-  const cookieToken = request.cookies.get('token')?.value;
-  const headerToken = request.headers
-    .get('authorization')
-    ?.split(' ')[1];
-  const token = cookieToken || headerToken;
+  // Allow public pages — no token needed
+  if (PUBLIC_PAGES.some((p) => pathname.startsWith(p))) {
+    return NextResponse.next();
+  }
 
-  if (!token) {
-    if (pathname.startsWith('/api/')) {
+  // Allow public API routes — no token needed
+  if (PUBLIC_API.some((p) => pathname.startsWith(p))) {
+    return NextResponse.next();
+  }
+
+  // For protected API routes only — check token
+  if (pathname.startsWith('/api/')) {
+    const authHeader = request.headers.get('authorization');
+    const token      = authHeader?.split(' ')[1];
+
+    if (!token) {
       return NextResponse.json(
         { success: false, message: 'Unauthorized. Please login.' },
         { status: 401 }
       );
     }
-    return NextResponse.redirect(new URL('/login', request.url));
-  }
 
-  const decoded = decodeJWT(token);
+    const decoded = decodeJWT(token);
 
-  if (!decoded || !decoded.id) {
-    if (pathname.startsWith('/api/')) {
+    if (!decoded || !decoded.id) {
       return NextResponse.json(
         { success: false, message: 'Invalid token.' },
         { status: 401 }
       );
     }
-    return NextResponse.redirect(new URL('/login', request.url));
-  }
 
-  if (decoded.exp && decoded.exp * 1000 < Date.now()) {
-    if (pathname.startsWith('/api/')) {
+    if (decoded.exp && decoded.exp * 1000 < Date.now()) {
       return NextResponse.json(
         { success: false, message: 'Token expired. Please login again.' },
         { status: 401 }
       );
     }
-    return NextResponse.redirect(new URL('/login', request.url));
+
+    // Attach user info to headers for API routes
+    const headers = new Headers(request.headers);
+    headers.set('x-user-id',   decoded.id);
+    headers.set('x-user-role', decoded.role  || '');
+    headers.set('x-user-name', decoded.name  || '');
+
+    return NextResponse.next({
+      request: { headers },
+    });
   }
 
-  const requestHeaders = new Headers(request.headers);
-  requestHeaders.set('x-user-id',   decoded.id);
-  requestHeaders.set('x-user-role', decoded.role  || '');
-  requestHeaders.set('x-user-name', decoded.name  || '');
-
-  return NextResponse.next({
-    request: { headers: requestHeaders },
-  });
+  // For all other pages — let AuthGuard handle it client-side
+  return NextResponse.next();
 }
 
 export const config = {
   matcher: [
-    '/((?!_next/static|_next/image|favicon.ico|public/).*)',
+    '/((?!_next/static|_next/image|favicon.ico).*)',
   ],
-};                                                            
+};
