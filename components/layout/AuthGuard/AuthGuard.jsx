@@ -5,23 +5,27 @@ import { useAuthStore }        from '@/store/authStore';
 import Spinner                 from '@/components/ui/Spinner/Spinner';
 
 export default function AuthGuard({ children }) {
-  const { token, user, hydrated } = useAuthStore();
-  const router                    = useRouter();
-  const [ready, setReady]         = useState(false);
+  const router               = useRouter();
+  const { token, hydrated }  = useAuthStore();
+  const [checked, setChecked] = useState(false);
 
   useEffect(() => {
-    // Wait until Zustand has rehydrated from localStorage
+    // Do nothing until Zustand has loaded from localStorage
     if (!hydrated) return;
 
-    if (!token || !user) {
-      router.push('/login');
+    if (!token) {
+      // No token — send to login
+      router.replace('/login');
     } else {
-      setReady(true);
+      // Token exists — allow access
+      setChecked(true);
     }
-  }, [hydrated, token, user, router]);
+  }, [hydrated, token, router]);
 
-  // Show spinner while waiting for hydration
-  if (!hydrated || !ready) {
+  // Show spinner while:
+  // 1. Zustand is still loading from localStorage
+  // 2. We have a token but haven't confirmed yet
+  if (!hydrated || !checked) {
     return (
       <div style={{
         minHeight:      '100vh',
@@ -32,13 +36,14 @@ export default function AuthGuard({ children }) {
         flexDirection:  'column',
         gap:            16,
       }}>
-        <Spinner size={40} />
-        <span style={{ color: 'var(--muted)', fontSize: 14 }}>
-          Loading...
+        <Spinner size={36} />
+        <span style={{ color: 'var(--muted)', fontSize: 13 }}>
+          Please wait...
         </span>
       </div>
     );
   }
 
-  return children;
+  // Token confirmed — show the page
+  return <>{children}</>;
 }
