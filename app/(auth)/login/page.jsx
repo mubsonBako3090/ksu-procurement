@@ -1,12 +1,12 @@
 'use client';
-import { useState }      from 'react';
-import { useRouter }     from 'next/navigation';
-import Link              from 'next/link';
-import axios             from 'axios';
-import toast             from 'react-hot-toast';
-import { useAuthStore }  from '@/store/authStore';
-import styles            from './login.module.css';
-import Spinner           from '@/components/ui/Spinner/Spinner';
+import { useState, useEffect } from 'react';
+import { useRouter }           from 'next/navigation';
+import Link                    from 'next/link';
+import axios                   from 'axios';
+import toast                   from 'react-hot-toast';
+import { useAuthStore }        from '@/store/authStore';
+import styles                  from './login.module.css';
+import Spinner                 from '@/components/ui/Spinner/Spinner';
 
 const DEMO_USERS = [
   { role: 'Requester',   email: 'requester@ksu.edu.ng'   },
@@ -17,57 +17,77 @@ const DEMO_USERS = [
   { role: 'Admin',       email: 'admin@ksu.edu.ng'       },
 ];
 
-// Where each role goes after login
-const ROLE_REDIRECT = {
-  requester:   '/dashboard',
-  hod:         '/dashboard',
-  procurement: '/dashboard',
-  finance:     '/dashboard',
-  vc:          '/dashboard',
-  admin:       '/dashboard',
-};
-
 export default function LoginPage() {
-  const [form,       setForm]       = useState({ email: '', password: '' });
-  const [loading,    setLoading]    = useState(false);
-  const [showPass,   setShowPass]   = useState(false);
-  const { setAuth }  = useAuthStore();
-  const router       = useRouter();
+  const [form,     setForm]     = useState({ email: '', password: '' });
+  const [loading,  setLoading]  = useState(false);
+  const [showPass, setShowPass] = useState(false);
+
+  const { token, user, setAuth, hydrated } = useAuthStore();
+  const router = useRouter();
+
+  // ✅ Key fix — watch for token change AFTER hydration
+  // When token appears in store, redirect to dashboard
+  useEffect(() => {
+    if (hydrated && token && user) {
+      router.push('/dashboard');
+    }
+  }, [hydrated, token, user, router]);
 
   const set = (k) => (e) =>
     setForm((f) => ({ ...f, [k]: e.target.value }));
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (!form.email || !form.password) {
       return toast.error('Please fill in all fields');
     }
+
     setLoading(true);
     try {
       const { data } = await axios.post('/api/auth/login', form);
-      const { token, user } = data.data;
+      const { token: newToken, user: newUser } = data.data;
 
-      // Save auth state
-      setAuth(token, user);
+      // ✅ Save to Zustand — useEffect above will handle redirect
+      setAuth(newToken, newUser);
 
-      // Show welcome message with role
-      toast.success(`Welcome, ${user.name}! Logged in as ${user.role}.`);
+      toast.success(`Welcome, ${newUser.name}!`);
 
-      // Redirect based on role
-      const redirect = ROLE_REDIRECT[user.role] || '/dashboard';
-      router.push(redirect);
+      // ✅ Small delay to ensure Zustand saves before redirect
+      setTimeout(() => {
+        router.push('/dashboard');
+      }, 100);
 
     } catch (err) {
       toast.error(
         err.response?.data?.message || 'Invalid email or password'
       );
-    } finally {
       setLoading(false);
     }
   };
 
   const autoFill = (email) =>
     setForm({ email, password: 'Password@123' });
+
+  // If already logged in redirect away from login page
+  if (hydrated && token && user) {
+    return (
+      <div style={{
+        minHeight:      '100vh',
+        display:        'flex',
+        alignItems:     'center',
+        justifyContent: 'center',
+        background:     'var(--bg)',
+        flexDirection:  'column',
+        gap:            16,
+      }}>
+        <Spinner size={40} />
+        <span style={{ color: 'var(--muted)', fontSize: 14 }}>
+          Redirecting to dashboard...
+        </span>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.page}>
@@ -179,4 +199,4 @@ export default function LoginPage() {
       </div>
     </div>
   );
-      }
+  }
