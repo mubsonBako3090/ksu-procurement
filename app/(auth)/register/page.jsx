@@ -6,7 +6,11 @@ import axios                   from 'axios';
 import toast                   from 'react-hot-toast';
 import styles                  from './register.module.css';
 import Spinner                 from '@/components/ui/Spinner/Spinner';
+// Add this import at the top of register/page.jsx
+import { useAuthStore } from '@/store/authStore';
 
+// Add this inside the component
+const { setAuth } = useAuthStore();
 const ROLE_OPTIONS = [
   { value: 'requester',   label: 'Requester — Submit procurement requests' },
   { value: 'hod',         label: 'HOD — Head of Department approvals'      },
