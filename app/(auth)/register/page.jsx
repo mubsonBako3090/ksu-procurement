@@ -66,19 +66,25 @@ const { setAuth } = useAuthStore();
     setErrors(e);
     return Object.keys(e).length === 0;
   };
-
 const handleSubmit = async (e) => {
   e.preventDefault();
+
   if (!validate()) return;
 
   setLoading(true);
+
   try {
-  } const {
-      name, email, password,
-      role, department, phone, staffId,
+    const {
+      name,
+      email,
+      password,
+      role,
+      department,
+      phone,
+      staffId,
     } = form;
 
-    // Step 1 — Register
+    // Register user
     await axios.post('/api/auth/register', {
       name,
       email,
@@ -91,7 +97,7 @@ const handleSubmit = async (e) => {
 
     toast.success('Account created! Logging you in...');
 
-    // Step 2 — Auto login
+    // Auto login
     const { data } = await axios.post('/api/auth/login', {
       email,
       password,
@@ -99,22 +105,21 @@ const handleSubmit = async (e) => {
 
     const { token, user } = data.data;
 
-    // Step 3 — Save to store
+    // Save auth state
     setAuth(token, user);
 
     toast.success(`Welcome, ${user.name}!`);
 
-    // Step 4 — Go to dashboard
+    // Redirect
     router.replace('/dashboard');
-
   } catch (err) {
     toast.error(
       err.response?.data?.message || 'Registration failed'
     );
+  } finally {
     setLoading(false);
   }
 };
-
     const { token: newToken, user: newUser } = data.data;
 
     // Step 3 — Save auth state
