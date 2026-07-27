@@ -1,12 +1,12 @@
 'use client';
-import { useState, useEffect } from 'react';
-import { useRouter }           from 'next/navigation';
-import Link                    from 'next/link';
-import axios                   from 'axios';
-import toast                   from 'react-hot-toast';
-import { useAuthStore }        from '@/store/authStore';
-import styles                  from './login.module.css';
-import Spinner                 from '@/components/ui/Spinner/Spinner';
+import { useState }      from 'react';
+import { useRouter }     from 'next/navigation';
+import Link              from 'next/link';
+import axios             from 'axios';
+import toast             from 'react-hot-toast';
+import { useAuthStore }  from '@/store/authStore';
+import styles            from './login.module.css';
+import Spinner           from '@/components/ui/Spinner/Spinner';
 
 const DEMO_USERS = [
   { role: 'Requester',   email: 'requester@ksu.edu.ng'   },
@@ -22,16 +22,8 @@ export default function LoginPage() {
   const [loading,  setLoading]  = useState(false);
   const [showPass, setShowPass] = useState(false);
 
-  const { token, user, setAuth, hydrated } = useAuthStore();
-  const router = useRouter();
-
-  // ✅ Key fix — watch for token change AFTER hydration
-  // When token appears in store, redirect to dashboard
-  useEffect(() => {
-    if (hydrated && token && user) {
-      router.push('/dashboard');
-    }
-  }, [hydrated, token, user, router]);
+  const { setAuth } = useAuthStore();
+  const router      = useRouter();
 
   const set = (k) => (e) =>
     setForm((f) => ({ ...f, [k]: e.target.value }));
@@ -44,19 +36,19 @@ export default function LoginPage() {
     }
 
     setLoading(true);
+
     try {
       const { data } = await axios.post('/api/auth/login', form);
-      const { token: newToken, user: newUser } = data.data;
+      const { token, user } = data.data;
 
-      // ✅ Save to Zustand — useEffect above will handle redirect
-      setAuth(newToken, newUser);
+      // Save auth to Zustand + localStorage
+      setAuth(token, user);
 
-      toast.success(`Welcome, ${newUser.name}!`);
+      toast.success(`Welcome, ${user.name}!`);
 
-      // ✅ Small delay to ensure Zustand saves before redirect
-      setTimeout(() => {
-        router.push('/dashboard');
-      }, 100);
+      // ✅ Use replace not push so back button
+      // does not bring them back to login
+      router.replace('/dashboard');
 
     } catch (err) {
       toast.error(
@@ -68,26 +60,6 @@ export default function LoginPage() {
 
   const autoFill = (email) =>
     setForm({ email, password: 'Password@123' });
-
-  // If already logged in redirect away from login page
-  if (hydrated && token && user) {
-    return (
-      <div style={{
-        minHeight:      '100vh',
-        display:        'flex',
-        alignItems:     'center',
-        justifyContent: 'center',
-        background:     'var(--bg)',
-        flexDirection:  'column',
-        gap:            16,
-      }}>
-        <Spinner size={40} />
-        <span style={{ color: 'var(--muted)', fontSize: 14 }}>
-          Redirecting to dashboard...
-        </span>
-      </div>
-    );
-  }
 
   return (
     <div className={styles.page}>
@@ -102,6 +74,7 @@ export default function LoginPage() {
 
         {/* Form */}
         <form onSubmit={handleSubmit} className={styles.form}>
+
           <div className={styles.field}>
             <label className={styles.label}>Email Address</label>
             <div className={styles.inputWrap}>
@@ -138,11 +111,10 @@ export default function LoginPage() {
                 onClick={() => setShowPass((s) => !s)}
                 tabIndex={-1}
               >
-                <i
-                  className={`bi ${
-                    showPass ? 'bi-eye-slash' : 'bi-eye'
-                  }`}
-                />
+                <i className={`bi ${showPass
+                  ? 'bi-eye-slash'
+                  : 'bi-eye'
+                }`} />
               </button>
             </div>
           </div>
@@ -175,7 +147,7 @@ export default function LoginPage() {
           <span>Demo Credentials</span>
         </div>
 
-        {/* Demo credentials */}
+        {/* Demo */}
         <div className={styles.demoBox}>
           <div className={styles.demoGrid}>
             {DEMO_USERS.map((u) => (
@@ -199,4 +171,4 @@ export default function LoginPage() {
       </div>
     </div>
   );
-  }
+             }
