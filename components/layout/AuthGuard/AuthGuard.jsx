@@ -1,20 +1,27 @@
 'use client';
-import { useEffect }    from 'react';
-import { useRouter }    from 'next/navigation';
-import { useAuthStore } from '@/store/authStore';
-import Spinner          from '@/components/ui/Spinner/Spinner';
+import { useEffect, useState } from 'react';
+import { useRouter }           from 'next/navigation';
+import { useAuthStore }        from '@/store/authStore';
+import Spinner                 from '@/components/ui/Spinner/Spinner';
 
 export default function AuthGuard({ children }) {
-  const { token, user } = useAuthStore();
-  const router          = useRouter();
+  const { token, user, hydrated } = useAuthStore();
+  const router                    = useRouter();
+  const [ready, setReady]         = useState(false);
 
   useEffect(() => {
+    // Wait until Zustand has rehydrated from localStorage
+    if (!hydrated) return;
+
     if (!token || !user) {
       router.push('/login');
+    } else {
+      setReady(true);
     }
-  }, [token, user, router]);
+  }, [hydrated, token, user, router]);
 
-  if (!token || !user) {
+  // Show spinner while waiting for hydration
+  if (!hydrated || !ready) {
     return (
       <div style={{
         minHeight:      '100vh',
