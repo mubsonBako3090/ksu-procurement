@@ -64,16 +64,36 @@ const handleSubmit = async (e) => {
 
   setLoading(true);
   try {
-    // Step 1 — Create admin account
+    // Step 1 — Create admin
     await axios.post('/api/auth/setup', form);
 
-    toast.success('Admin account created! Logging you in...');
+    toast.success('Setup complete! Logging you in...');
 
     // Step 2 — Auto login
     const { data } = await axios.post('/api/auth/login', {
       email:    form.email,
       password: form.password,
     });
+
+    const { token, user } = data.data;
+
+    // Step 3 — Save to store
+    setAuth(token, user);
+
+    setDone(true);
+
+    // Step 4 — Go to dashboard
+    setTimeout(() => {
+      router.replace('/dashboard');
+    }, 2000);
+
+  } catch (err) {
+    toast.error(
+      err.response?.data?.message || 'Setup failed'
+    );
+    setLoading(false);
+  }
+};
 
     const { token: newToken, user: newUser } = data.data;
 
