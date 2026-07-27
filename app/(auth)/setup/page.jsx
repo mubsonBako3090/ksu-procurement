@@ -60,29 +60,31 @@ export default function SetupPage() {
   };
 const handleSubmit = async (e) => {
   e.preventDefault();
+
   if (!validate()) return;
 
   setLoading(true);
+
   try {
-    // Step 1 — Create admin
+    // Step 1 — Create admin account
     await axios.post('/api/auth/setup', form);
 
     toast.success('Setup complete! Logging you in...');
 
     // Step 2 — Auto login
     const { data } = await axios.post('/api/auth/login', {
-      email:    form.email,
+      email: form.email,
       password: form.password,
     });
 
     const { token, user } = data.data;
 
-    // Step 3 — Save to store
+    // Step 3 — Save auth state
     setAuth(token, user);
 
     setDone(true);
 
-    // Step 4 — Go to dashboard
+    // Step 4 — Redirect to dashboard
     setTimeout(() => {
       router.replace('/dashboard');
     }, 2000);
@@ -91,24 +93,7 @@ const handleSubmit = async (e) => {
     toast.error(
       err.response?.data?.message || 'Setup failed'
     );
-    setLoading(false);
-  }
-};
-
-    const { token: newToken, user: newUser } = data.data;
-
-    // Step 3 — Save auth
-    setAuth(newToken, newUser);
-
-    setDone(true);
-
-    // Step 4 — Redirect
-    setTimeout(() => {
-      router.push('/dashboard');
-    }, 2000);
-
-  } catch (err) {
-    toast.error(err.response?.data?.message || 'Setup failed');
+  } finally {
     setLoading(false);
   }
 };
