@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter }           from 'next/navigation';
 import axios                   from 'axios';
-import styles                  from '../dashboard.module.css';
+import styles                  from './dashboard.module.css';
 import Card                    from '@/components/ui/Card/Card';
 import StatCard                from '@/components/ui/StatCard/StatCard';
 import Badge                   from '@/components/ui/Badge/Badge';
