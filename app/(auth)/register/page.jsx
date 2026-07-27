@@ -73,7 +73,7 @@ const handleSubmit = async (e) => {
 
   setLoading(true);
   try {
-    const {
+  } const {
       name, email, password,
       role, department, phone, staffId,
     } = form;
